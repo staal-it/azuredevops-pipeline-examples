@@ -27,11 +27,7 @@ stages:
 - stage: B
   dependsOn: A
   variables:
-      varFromStageA: $[ stageDependencies.A.outputs['JA.JA.DetermineResult.doThing'] ]
-      varFromStageA2: $[ stageDependencies.A.JA.outputs['DetermineResult.doThing'] ]
-      varFromStageA3: $[ dependencies.A.outputs['JA.JA.DetermineResult.doThing'] ]
-      varFromStageA4: $[ dependencies.A.JA.outputs['DetermineResult.doThing'] ]
-      varFromStageA5: $[ stageDependencies.A.JA.outputs['JA.DetermineResult.doThing'] ]
+      varFromStageA: $[ stageDependencies.A.JA.outputs['JA.DetermineResult.doThing'] ]
   jobs:
   - job : JB2
     steps:
@@ -42,10 +38,6 @@ stages:
           script: |
             write-host "This is job Foo."
             write-host $(varFromStageA)
-            write-host $(varFromStageA2)
-            write-host $(varFromStageA3)
-            write-host $(varFromStageA4)
-            write-host $(varFromStageA5)
 
   - deployment: JB
     environment: 'IaCDevEnvironment'
@@ -62,8 +54,4 @@ stages:
               script: |
                 write-host "This is job Foo."
                 write-host $(varFromStageA)
-                write-host $(varFromStageA2)
-                write-host $(varFromStageA3)
-                write-host $(varFromStageA4)
-                write-host $(varFromStageA5)
 
