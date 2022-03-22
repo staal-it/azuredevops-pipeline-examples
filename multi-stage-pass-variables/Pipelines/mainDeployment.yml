@@ -90,7 +90,6 @@ stages:
   - name: devKubeletPrincipalId 
     value: $[ stageDependencies.DeployDev.DeployResources.outputs['IaCDevEnvironment.SetOutputs.kubeletPrincipalId'] ]
 
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
   displayName: Deploy template to prod environment
   jobs:
   - deployment:
