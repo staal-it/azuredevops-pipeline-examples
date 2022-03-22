@@ -29,16 +29,6 @@ stages:
   variables:
       varFromStageA: $[ stageDependencies.A.JA.outputs['JA.DetermineResult.doThing'] ]
   jobs:
-  - job : JB2
-    steps:
-      - task: PowerShell@2
-        name: DetermineResult
-        inputs:
-          targetType: inline
-          script: |
-            write-host "This is job Foo."
-            write-host $(varFromStageA)
-
   - deployment: JB
     environment: 'IaCDevEnvironment'
     strategy:
