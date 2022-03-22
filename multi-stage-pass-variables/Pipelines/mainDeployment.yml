@@ -88,7 +88,7 @@ stages:
 
   variables:
   - name: devKubeletPrincipalId 
-    value: $[ stageDependencies.DeployDev.DeployResources.outputs['IaCDevEnvironment.SetOutputs.kubeletPrincipalId'] ]
+    value: $[ stageDependencies.DeployDev.DeployResources.outputs['DeployResources.SetOutputs.kubeletPrincipalId'] ]
 
   displayName: Deploy template to prod environment
   jobs:
