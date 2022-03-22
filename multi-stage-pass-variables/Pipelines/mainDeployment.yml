@@ -4,8 +4,8 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  ModulesFolderPath: $(Build.SourcesDirectory)/Bicep
-  ParameterFilesFolderPath: $(Build.SourcesDirectory)/Pipelines
+  ModulesFolderPath: $(Build.SourcesDirectory)/multi-stage-pass-variables/Bicep
+  ParameterFilesFolderPath: $(Build.SourcesDirectory)/multi-stage-pass-variables/Pipelines
 
   NonProdSubscriptionId: 'f0e483fc-9d2f-4a4b-8aee-887a398ff27e'
   NonProdAzureResourceManagerConnection: 'Azure MVP Sponsorship'
