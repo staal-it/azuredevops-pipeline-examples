@@ -28,7 +28,19 @@ stages:
   dependsOn: A
   variables:
       varFromStageA: $[ stageDependencies.A.outputs['JA.JA.DetermineResult.doThing'] ]
+      varFromStageA2: $[ stageDependencies.A.JA.outputs['DetermineResult.doThing'] ]
   jobs:
+  - job : JB2
+    steps:
+      - task: PowerShell@2
+        name: DetermineResult
+        inputs:
+          targetType: inline
+          script: |
+            write-host "This is job Foo."
+            write-host $(varFromStageA)
+            write-host $(varFromStageA2)
+
   - deployment: JB
     environment: 'IaCDevEnvironment'
     strategy:
@@ -44,3 +56,4 @@ stages:
               script: |
                 write-host "This is job Foo."
                 write-host $(varFromStageA)
+                write-host $(varFromStageA2)
