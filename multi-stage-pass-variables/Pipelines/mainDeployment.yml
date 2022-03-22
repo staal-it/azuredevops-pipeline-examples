@@ -121,5 +121,8 @@ stages:
                 write-host "Dev ID"
                 write-host $(devKubeletPrincipalId)
 
-                az role assignment create --role "AcrPull" --assignee-object-id $(devKubeletPrincipalId) --scope $armOutputObj.acrId.value --assignee-object-id ServicePrincipal
-                az role assignment create --role "AcrPull" --assignee-object-id $armOutputObj.kubeletIdentityPrincipalId.value --scope $armOutputObj.acrId.value --assignee-object-id ServicePrincipal
+                write-host "ACR ID"
+                write-host $armOutputObj.acrId.value
+
+                az role assignment create --role "AcrPull" --assignee-object-id $(devKubeletPrincipalId) --scope $armOutputObj.acrId.value --assignee-principal-type ServicePrincipal
+                az role assignment create --role "AcrPull" --assignee-object-id $armOutputObj.kubeletIdentityPrincipalId.value --scope $armOutputObj.acrId.value --assignee-principal-type ServicePrincipal
