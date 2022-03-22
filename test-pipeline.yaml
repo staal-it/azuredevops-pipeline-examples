@@ -8,19 +8,18 @@ stages:
   jobs:
   - job: JA
     steps:
-    - script: |
-        echo "This is job Foo."
-        echo "##vso[task.setvariable variable=doThing;isOutput=true]Yes" #The variable doThing is set to true
+    - task: PowerShell@2
       name: DetermineResult
+      inputs:
+        targetType: inline
+        script: |
+          write-host "This is job Foo."
+
+          write-host "##vso[task.setvariable variable=doThing;isOutput=true]Yes" #The variable doThing is set to true
+
     - script: echo $(DetermineResult.doThing)
       name: echovar
-  - job: JA_2
-    dependsOn: JA
-    condition: eq(dependencies.JA.outputs['DetermineResult.doThing'], 'Yes')
-    steps:
-    - script: |
-        echo "This is job Bar."
-#job JB from stage B runs if DetermineResult task set doThing variable n stage A
+
 - stage: B
   dependsOn: A
   variables:
@@ -31,3 +30,10 @@ stages:
     steps:
     - bash: echo "Hello world stage B first job"
     - script: echo $(varFromStageA)
+    - task: PowerShell@2
+      name: DetermineResult
+      inputs:
+        targetType: inline
+        script: |
+          write-host "This is job Foo."
+          write-host $(varFromStageA)
