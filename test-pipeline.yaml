@@ -31,7 +31,7 @@ stages:
       varFromStageA2: $[ stageDependencies.A.JA.outputs['DetermineResult.doThing'] ]
       varFromStageA3: $[ dependencies.A.outputs['JA.JA.DetermineResult.doThing'] ]
       varFromStageA4: $[ dependencies.A.JA.outputs['DetermineResult.doThing'] ]
-      varFromStageA5: $[ dependencies.A.JA.outputs['JA.DetermineResult.doThing'] ]
+      varFromStageA5: $[ stageDependencies.A.JA.outputs['JA.DetermineResult.doThing'] ]
   jobs:
   - job : JB2
     steps:
