@@ -6,34 +6,41 @@ pool:
 stages:
 - stage: A
   jobs:
-  - job: JA
-    steps:
-    - task: PowerShell@2
-      name: DetermineResult
-      inputs:
-        targetType: inline
-        script: |
-          write-host "This is job Foo."
+  - deployment: JA
+    environment: 'IaCDevEnvironment'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: PowerShell@2
+            name: DetermineResult
+            inputs:
+              targetType: inline
+              script: |
+                write-host "This is job Foo."
 
-          write-host "##vso[task.setvariable variable=doThing;isOutput=true]Yes" #The variable doThing is set to true
+                write-host "##vso[task.setvariable variable=doThing;isOutput=true]Yes" #The variable doThing is set to true
 
-    - script: echo $(DetermineResult.doThing)
-      name: echovar
+          - script: echo $(DetermineResult.doThing)
+            name: echovar
 
 - stage: B
   dependsOn: A
   variables:
       varFromStageA: $[ stageDependencies.A.JA.outputs['DetermineResult.doThing'] ]
   jobs:
-  - job: JB
-    
-    steps:
-    - bash: echo "Hello world stage B first job"
-    - script: echo $(varFromStageA)
-    - task: PowerShell@2
-      name: DetermineResult
-      inputs:
-        targetType: inline
-        script: |
-          write-host "This is job Foo."
-          write-host $(varFromStageA)
+  - deployment: JB
+    environment: 'IaCDevEnvironment'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - bash: echo "Hello world stage B first job"
+          - script: echo $(varFromStageA)
+          - task: PowerShell@2
+            name: DetermineResult
+            inputs:
+              targetType: inline
+              script: |
+                write-host "This is job Foo."
+                write-host $(varFromStageA)
