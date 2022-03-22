@@ -41,4 +41,4 @@ steps:
       $armOutputObj = $env:MAINDEPLOYMENTS_OUTPUTS | convertfrom-json
       Write-Host $armOutputObj
 
-      echo "##vso[task.setvariable variable=kubeletPrincipalId;isOutput=true]$armOutputObj.kubeletIdentityPrincipalId.value"
+      Write-Host "##vso[task.setvariable variable=kubeletPrincipalId;isOutput=true]$armOutputObj.kubeletIdentityPrincipalId.value"
