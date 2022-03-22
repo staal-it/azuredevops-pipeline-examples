@@ -27,7 +27,7 @@ stages:
 - stage: B
   dependsOn: A
   variables:
-      varFromStageA: $[ stageDependencies.A.JA.outputs['DetermineResult.doThing'] ]
+      varFromStageA: $[ stageDependencies.A.outputs['JA.JA.DetermineResult.doThing'] ]
   jobs:
   - deployment: JB
     environment: 'IaCDevEnvironment'
