@@ -115,6 +115,9 @@ stages:
               addSpnToEnvironment: true
               inlineScript: |
                 $armOutputObj = $env:MAINDEPLOYMENTS_OUTPUTS | convertfrom-json
+                write-host $armOutputObj
+                write-host $armOutputObj.kubeletIdentityPrincipalId.value
+                write-host $(devKubeletPrincipalId)
 
-                az role assignment create --role "AcrPull" --assignee ${{ variables.devKubeletPrincipalId }} --scope $armOutputObj.acrId.value
+                az role assignment create --role "AcrPull" --assignee $(devKubeletPrincipalId) --scope $armOutputObj.acrId.value
                 az role assignment create --role "AcrPull" --assignee $armOutputObj.kubeletIdentityPrincipalId.value --scope $armOutputObj.acrId.value
