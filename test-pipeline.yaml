@@ -18,8 +18,8 @@ stages:
               targetType: inline
               script: |
                 write-host "This is job Foo."
-
-                write-host "##vso[task.setvariable variable=doThing;isOutput=true]Yes" #The variable doThing is set to true
+                $yes = "Yes!"
+                write-host "##vso[task.setvariable variable=doThing;isOutput=true]$yes" #The variable doThing is set to true
 
           - script: echo $(DetermineResult.doThing)
             name: echovar
