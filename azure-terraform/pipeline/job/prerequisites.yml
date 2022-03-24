@@ -10,6 +10,8 @@ parameters:
   - name: containerName
     type: string
     default: "terraform-state"
+  - name: publicNetworkAction
+    type: string
   - name: allowedSubnetIds
     type: object
     default:
@@ -39,4 +41,5 @@ jobs:
               -resourceGroupName "${{ parameters.resourceGroup }}" `
               -storageAccountName  "${{ parameters.storageAccount }}" `
               -containerName "${{ parameters.containerName }}" `
+              -publicNetworkAction "${{ parameters.publicNetworkAction }}" `
               -allowedSubnetIds $allowedSubnetIds
