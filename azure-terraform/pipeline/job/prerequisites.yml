@@ -1,6 +1,9 @@
 parameters:   
   - name: serviceConnection
     type: string
+  - name: terraformDirectory
+    type: string
+    default: "terraform"
   - name: subscriptionId
     type: string
   - name: storageAccount
@@ -36,7 +39,7 @@ jobs:
               $allowedSubnetIds = $allowedSubnetIdsJson |ConvertFrom-Json
             }
 
-            ./pipeline/job/createPrerequisites.ps1 `
+            ./${{ parameters.terraformDirectory }}/pipeline/job/createPrerequisites.ps1 `
               -subscriptionId "${{ parameters.subscriptionId }}" `
               -resourceGroupName "${{ parameters.resourceGroup }}" `
               -storageAccountName  "${{ parameters.storageAccount }}" `

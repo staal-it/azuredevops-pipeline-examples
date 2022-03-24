@@ -22,6 +22,7 @@ stages:
           storageAccount: ${{ variables.stateStorageAccountName }}
           containerName: ${{ variables.stateContainerName }}
           publicNetworkAction: "Allow"
+          terraformDirectory: "azure-terraform"
 
       - template: job/plan.yml
         parameters:
@@ -64,6 +65,7 @@ stages:
           storageAccount: ${{ variables.stateStorageAccountName }}
           containerName: ${{ variables.stateContainerName }}
           publicNetworkAction: "Allow"
+          terraformDirectory: "azure-terraform"
 
       - template: job/plan.yml
         parameters:
