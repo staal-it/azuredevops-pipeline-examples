@@ -1,0 +1,42 @@
+parameters:   
+  - name: serviceConnection
+    type: string
+  - name: subscriptionId
+    type: string
+  - name: storageAccount
+    type: string
+  - name: resourceGroup
+    type: string
+  - name: containerName
+    type: string
+    default: "terraform-state"
+  - name: allowedSubnetIds
+    type: object
+    default:
+
+jobs:
+  - job: TerraformPrerequisites
+    displayName: Prerequisites for Terraform in Azure
+    steps:
+      - task: AzureCLI@2
+        displayName: Create prerequisites
+        inputs:
+          azureSubscription: ${{ parameters.serviceConnection }}
+          scriptType: "pscore"
+          powerShellErrorActionPreference: "stop"
+          scriptLocation: "inlineScript"
+          workingDirectory: "$(System.DefaultWorkingDirectory)"
+          inlineScript: |
+            $allowedSubnetIdsJson = '${{ convertToJson(parameters.allowedSubnetIds) }}'
+
+            $allowedSubnetIds = @()
+            if ($allowedSubnetIdsJson.StartsWith("[")) { # only deserialize if json starts with [, when specifying no values, the json will be empty or contain "" resulting in errors when deserializing
+              $allowedSubnetIds = $allowedSubnetIdsJson |ConvertFrom-Json
+            }
+
+            ./pipeline/job/createPrerequisites.ps1 `
+              -subscriptionId "${{ parameters.subscriptionId }}" `
+              -resourceGroupName "${{ parameters.resourceGroup }}" `
+              -storageAccountName  "${{ parameters.storageAccount }}" `
+              -containerName "${{ parameters.containerName }}" `
+              -allowedSubnetIds $allowedSubnetIds
