@@ -1,0 +1,66 @@
+parameters:
+  - name: serviceConnection
+    type: string
+  - name: terraformDirectory
+    type: string
+    default: "terraform"
+  - name: terraformStateKey
+    type: string
+  - name: storageAccount
+    type: string
+  - name: resourceGroup
+    type: string
+  - name: location
+    type: string
+    default: 'westeurope'
+  - name: containerName
+    type: string
+  - name: environment
+    type: string
+  - name: deployment
+    type: string
+  - name: dependsOn
+    type: string
+    default: ""
+
+jobs:
+  - deployment: TerraformApply
+    displayName: Terraform Apply
+    dependsOn: ${{ parameters.dependsOn }}
+    environment: ${{ parameters.environment }}
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - checkout: self
+              clean: true
+
+            - task: TerraformCLI@0
+              displayName: Terraform init
+              inputs:
+                command: init
+                backendType: azurerm
+                backendServiceArm: ${{ parameters.serviceconnection }}
+                workingDirectory: "$(System.DefaultWorkingDirectory)/${{ parameters.terraformDirectory }}"
+                ensureBackend: false
+                backendAzureRmResourceGroupName: ${{ parameters.resourceGroup }}
+                backendAzureRmResourceGroupLocation: ${{ parameters.location }}
+                backendAzureRmStorageAccountName: ${{ parameters.storageAccount }}
+                backendAzureRmStorageAccountSku: 'Standard_LRS'
+                backendAzureRmContainerName: ${{ parameters.containerName }}
+                backendAzureRmKey: ${{ parameters.terraformStateKey }}
+
+            - task: DownloadPipelineArtifact@2
+              inputs:
+                artifactName: terraformPlan-${{ parameters.deployment }}
+                targetPath: $(Build.Repository.LocalPath)/${{ parameters.terraformDirectory }}
+                buildType: 'current'
+
+            - task: TerraformCLI@0
+              displayName: Terraform apply
+              inputs:
+                command: apply
+                environmentServiceName: ${{ parameters.serviceconnection }}
+                workingDirectory: "$(System.DefaultWorkingDirectory)/${{ parameters.terraformDirectory }}"
+                runAzLogin: true
+                commandOptions: -input=false ${{parameters.deployment}}-tf.plan

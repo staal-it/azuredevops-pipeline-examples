@@ -1,0 +1,95 @@
+trigger: none
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  stateContainerName: 'terraform-state'
+  stateFileName: 'terraform.tfstate'
+
+stages:
+##### DEV Environment #####
+  - stage: PlanDEV
+    displayName: "Terraform plan - DEV"
+    variables:
+      - template: ../development-vars.yml
+    jobs:
+      - template: job/prerequisites.yml
+        parameters:
+          serviceConnection: ${{ variables.serviceConnectionName }}
+          subscriptionId: ${{ variables.stateSubscriptionId }}
+          resourceGroup: ${{ variables.stateResourceGroupname }}
+          storageAccount: ${{ variables.stateStorageAccountName }}
+          containerName: ${{ variables.stateContainerName }}
+          publicNetworkAction: "Allow"
+          terraformDirectory: "azure-terraform"
+
+      - template: job/plan.yml
+        parameters:
+          dependsOn: TerraformPrerequisites
+          deployment: dev
+          serviceConnection: ${{ variables.serviceConnectionName }}
+          resourceGroup: ${{ variables.stateResourceGroupname }}
+          storageAccount: ${{ variables.stateStorageAccountName }}
+          containerName: ${{ variables.stateContainerName }}
+          terraformStateKey: ${{ variables.stateFileName }}
+          terraformDirectory: "azure-terraform"
+
+  - stage: ApplyDEV
+    displayName: "Terraform apply - DEV"
+    variables:
+      - template: ../development-vars.yml
+    jobs:
+      - template: job/apply.yml
+        parameters:
+          environment: terraform-azure-example-dev
+          deployment: dev
+          serviceConnection: ${{ variables.serviceConnectionName }}
+          resourceGroup: ${{ variables.stateResourceGroupname }}
+          storageAccount: ${{ variables.stateStorageAccountName }}
+          containerName: ${{ variables.stateContainerName }}
+          terraformStateKey: ${{ variables.stateFileName }}
+          terraformDirectory: "azure-terraform"
+
+##### PRD Environment #####
+  - stage: PlanPRD
+    displayName: "Terraform plan - PRD"
+    variables:
+      - template: ../production-vars.yml
+    jobs:
+      - template: job/prerequisites.yml
+        parameters:
+          serviceConnection: ${{ variables.serviceConnectionName }}
+          subscriptionId: ${{ variables.stateSubscriptionId }}
+          resourceGroup: ${{ variables.stateResourceGroupname }}
+          storageAccount: ${{ variables.stateStorageAccountName }}
+          containerName: ${{ variables.stateContainerName }}
+          publicNetworkAction: "Allow"
+          terraformDirectory: "azure-terraform"
+
+      - template: job/plan.yml
+        parameters:
+          dependsOn: TerraformPrerequisites
+          deployment: prd
+          serviceConnection: ${{ variables.serviceConnectionName }}
+          resourceGroup: ${{ variables.stateResourceGroupname }}
+          storageAccount: ${{ variables.stateStorageAccountName }}
+          containerName: ${{ variables.stateContainerName }}
+          terraformStateKey: ${{ variables.stateFileName }}
+          terraformDirectory: "azure-terraform"
+
+  - stage: ApplyPRD
+    displayName: "Terraform apply - PRD"
+    variables:
+      - template: ../production-vars.yml
+    jobs:
+      - template: job/apply.yml
+        parameters:
+          environment: terraform-azure-example-prd
+          deployment: prd
+          serviceConnection: ${{ variables.serviceConnectionName }}
+          resourceGroup: ${{ variables.stateResourceGroupname }}
+          storageAccount: ${{ variables.stateStorageAccountName }}
+          containerName: ${{ variables.stateContainerName }}
+          terraformStateKey: ${{ variables.stateFileName }}
+          terraformDirectory: "azure-terraform"
