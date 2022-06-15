@@ -7,6 +7,8 @@ trigger:
     include:
     - azure-terraform
 
+pr: none
+
 pool:
   vmImage: ubuntu-latest
 
