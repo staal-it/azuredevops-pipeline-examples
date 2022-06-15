@@ -1,0 +1,71 @@
+parameters:
+- name: environment
+  type: string
+- name: project_name
+  type: string
+- name: service_connection
+  type: string
+- name: working_directory
+  type: string
+
+stages:
+- stage: Plan${{ parameters.environment }}
+  displayName: "Terraform plan - ${{ parameters.environment }}"
+
+  variables:
+    terraform_backend_resource_group: rg-${{ parameters.project_name }}-terra-${{ parameters.environment }}
+    terraform_backend_storage_account: st${{ parameters.project_name }}terra${{ parameters.environment }}
+    terraform_backend_storage_container: terraformstate
+    terraform_statefile_name: 'terraform.tfstate'
+
+  jobs:
+    - template: job/setTerraformEnvironmentVars.yml
+      parameters:
+        service_connection: ${{ parameters.service_connection }}
+
+    - template: job/prerequisites.yml
+      parameters:
+        service_connection: ${{ parameters.service_connection }}
+        resourceGroup: ${{ variables.terraform_backend_resource_group }}
+        storageAccount: ${{ variables.terraform_backend_storage_account }}
+        containerName: ${{ variables.terraform_backend_storage_container }}
+        publicNetworkAction: "Allow"
+        working_directory: ${{ parameters.working_directory }}
+        dependsOn: ['SetTerraformEnvironmentVariables']
+
+    - template: job/plan.yml
+      parameters:
+        dependsOn: ['TerraformPrerequisites']
+        environment: ${{ parameters.environment }}
+        service_connection: ${{ parameters.service_connection }}
+        resourceGroup: ${{ variables.terraform_backend_resource_group }}
+        storageAccount: ${{ variables.terraform_backend_storage_account }}
+        containerName: ${{ variables.terraform_backend_storage_container }}
+        terraformStateKey: ${{ variables.terraform_statefile_name }}
+        working_directory: ${{ parameters.working_directory }}
+
+- stage: Apply${{ parameters.environment }}
+  displayName: "Terraform apply - ${{ parameters.environment }}"
+
+  variables:
+    terraform_backend_resource_group: rg-${{ parameters.project_name }}-terra-${{ parameters.environment }}
+    terraform_backend_storage_account: st${{ parameters.project_name }}terra${{ parameters.environment }}
+    terraform_backend_storage_container: terraformstate
+    terraform_statefile_name: 'terraform.tfstate'
+    
+  jobs:
+    - template: job/setTerraformEnvironmentVars.yml
+      parameters:
+        service_connection: ${{ parameters.service_connection }}
+
+    - template: job/apply.yml
+      parameters:
+        azDoEnvironment: terraform-azure-example-${{ parameters.environment }}
+        environment: ${{ parameters.environment }}
+        service_connection: ${{ parameters.service_connection }}
+        resourceGroup: ${{ variables.terraform_backend_resource_group }}
+        storageAccount: ${{ variables.terraform_backend_storage_account }}
+        containerName: ${{ variables.terraform_backend_storage_container }}
+        terraformStateKey: ${{ variables.terraform_statefile_name }}
+        working_directory: ${{ parameters.working_directory }}
+        dependsOn: ['SetTerraformEnvironmentVariables']

@@ -1,6 +1,4 @@
 param(
-    [string]$subscriptionId,
-
     [Parameter(Mandatory = $true)]
     [string]$resourceGroupName,
     
@@ -22,13 +20,13 @@ $sku = "Standard_LRS"
 
 az  group create -l $location -g $resourceGroupName
 
-az storage account create --subscription $subscriptionId --resource-group $resourceGroupName --name $storageAccountName --sku $sku --allow-blob-public-access true --min-tls-version TLS1_2 --default-action $publicNetworkAction --allow-cross-tenant-replication false 
+az storage account create --resource-group $resourceGroupName --name $storageAccountName --sku $sku --allow-blob-public-access true --min-tls-version TLS1_2 --default-action $publicNetworkAction --allow-cross-tenant-replication false 
 
-az storage container create --subscription $subscriptionId --account-name $storageAccountName --name $containerName --auth-mode login
+az storage container create --account-name $storageAccountName --name $containerName --auth-mode login
 
 $addedANetworkRule = $false
 foreach ($subnetId in $subnetIds) {
-    az storage account network-rule add --subscription $subscriptionId --resource-group $resourceGroupName --account-name $storageAccountName --subnet $subnetId
+    az storage account network-rule add --resource-group $resourceGroupName --account-name $storageAccountName --subnet $subnetId
 
     $addedANetworkRule = $true
 }
