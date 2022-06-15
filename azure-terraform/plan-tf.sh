@@ -1,6 +1,7 @@
 #!/bin/bash
 set -xe 
 
-. ./common-tf.sh
+terraform fmt -check -recursive
+terraform validate
 
-terraform plan -out tfplan.tmp #> output.txt
+terraform plan -var-file=./config/dev.tfvars -out tfplan.tmp
