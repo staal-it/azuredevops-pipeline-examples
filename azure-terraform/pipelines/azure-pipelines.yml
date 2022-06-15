@@ -1,4 +1,11 @@
-trigger: none
+# specific path build
+trigger:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - azure-terraform
 
 pool:
   vmImage: ubuntu-latest
