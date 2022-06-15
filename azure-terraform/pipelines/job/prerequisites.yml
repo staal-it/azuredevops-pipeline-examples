@@ -1,11 +1,9 @@
 parameters:   
-  - name: serviceConnection
+  - name: service_connection
     type: string
-  - name: terraformDirectory
+  - name: working_directory
     type: string
     default: "terraform"
-  - name: subscriptionId
-    type: string
   - name: storageAccount
     type: string
   - name: resourceGroup
@@ -18,15 +16,20 @@ parameters:
   - name: allowedSubnetIds
     type: object
     default:
+  - name: dependsOn
+    type: object
+    default: []
 
 jobs:
   - job: TerraformPrerequisites
     displayName: Prerequisites for Terraform in Azure
+    dependsOn:  ${{ parameters.dependsOn }}
+
     steps:
       - task: AzureCLI@2
         displayName: Create prerequisites
         inputs:
-          azureSubscription: ${{ parameters.serviceConnection }}
+          azureSubscription: ${{ parameters.service_connection }}
           scriptType: "pscore"
           powerShellErrorActionPreference: "stop"
           scriptLocation: "inlineScript"
@@ -39,8 +42,7 @@ jobs:
               $allowedSubnetIds = $allowedSubnetIdsJson |ConvertFrom-Json
             }
 
-            ./${{ parameters.terraformDirectory }}/pipeline/job/createPrerequisites.ps1 `
-              -subscriptionId "${{ parameters.subscriptionId }}" `
+            ${{ parameters.working_directory }}/pipelines/job/createPrerequisites.ps1 `
               -resourceGroupName "${{ parameters.resourceGroup }}" `
               -storageAccountName  "${{ parameters.storageAccount }}" `
               -containerName "${{ parameters.containerName }}" `

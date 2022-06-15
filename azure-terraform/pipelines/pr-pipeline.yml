@@ -1,0 +1,61 @@
+trigger: none
+
+pr:
+- feature/*
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  working_directory: ./azure-terraform
+  project_name: terraformdemo
+  environment: dev
+  service_connection: 'Azure MVP Sponsorship'
+  terraform_backend_resource_group: rg-${{ variables.project_name }}-terra-${{ variables.environment }}
+  terraform_backend_storage_account: st${{ variables.project_name }}terra${{ variables.environment }}
+  terraform_backend_storage_container: terraformstate
+  terraform_statefile_name: 'terraform.tfstate'
+  location: 'westeurope'
+
+stages:
+  - stage: validateAndPlan
+    displayName: 'Validate and Plan'
+    jobs:
+    - job: validateAndPlan
+      displayName: Validate and Plan
+      steps:
+        - template: task/init.yml
+          parameters:
+            service_connection: ${{ variables.service_connection }}
+            resourceGroup: ${{ variables.terraform_backend_resource_group }}
+            storageAccount: ${{ variables.terraform_backend_storage_account }}
+            containerName: ${{ variables.terraform_backend_storage_container }}
+            terraformStateKey: ${{ variables.terraform_statefile_name }}
+            working_directory: ${{ variables.working_directory }}
+
+        - task: TerraformCLI@0
+          displayName: Terraform validate
+          inputs:
+            command: validate
+            workingDirectory: "$(System.DefaultWorkingDirectory)/${{ variables.working_directory }}"
+
+        - bash: | 
+            mkdir TFSecReport
+            chmod a+w TFSecReport
+
+            docker run --rm -t -v $(System.DefaultWorkingDirectory):/src -v $(System.DefaultWorkingDirectory)/TFSecReport:/reports aquasec/tfsec /src --debug --format default,junit,sarif --out /reports/TFSec
+          displayName: TFSec Static Code Analysis
+
+        - task: PublishTestResults@2
+          displayName: Publish TFSec test results
+          condition: succeededOrFailed()
+          inputs:
+            testResultsFormat: 'JUnit'
+            testResultsFiles: 'TFSec.junit'
+            searchFolder: '$(System.DefaultWorkingDirectory)/TFSecReport'
+            
+        - template: task/plan.yml
+          parameters:
+            service_connection: ${{ variables.service_connection }}
+            working_directory: ${{ variables.working_directory }}
+            environment: ${{ variables.environment }}
