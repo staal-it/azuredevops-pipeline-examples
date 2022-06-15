@@ -1,4 +1,12 @@
-trigger: none
+trigger:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - multi-stage-pass-variables
+
+pr: none
 
 pool:
   vmImage: ubuntu-latest
