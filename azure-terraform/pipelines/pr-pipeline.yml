@@ -8,7 +8,7 @@ pool:
 
 variables:
   working_directory: ./azure-terraform
-  project_name: terraformdemo
+  project_name: estfdemo
   environment: dev
   service_connection: 'Azure MVP Sponsorship'
   terraform_backend_resource_group: rg-${{ variables.project_name }}-terra-${{ variables.environment }}
