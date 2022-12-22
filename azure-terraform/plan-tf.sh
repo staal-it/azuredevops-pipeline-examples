@@ -1,5 +1,5 @@
 #!/bin/bash
-set -xe 
+set -xe
 
 terraform fmt -check -recursive
 terraform validate

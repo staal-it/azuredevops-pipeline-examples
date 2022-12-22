@@ -89,13 +89,13 @@ stages:
               parameters:
                 SubscriptionId: ${{ variables.NonProdSubscriptionId }}
                 Location: West Europe
-                AzureResourceManagerConnection: ${{ variables.NonProdAzureResourceManagerConnection }}        
-                Environment: 'dev'            
+                AzureResourceManagerConnection: ${{ variables.NonProdAzureResourceManagerConnection }}
+                Environment: 'dev'
 
 - stage: DeployProd
 
   variables:
-  - name: devKubeletPrincipalId 
+  - name: devKubeletPrincipalId
     value: $[ stageDependencies.DeployDev.DeployResources.outputs['DeployResources.SetOutputs.kubeletPrincipalId'] ]
 
   displayName: Deploy template to prod environment
@@ -106,12 +106,12 @@ stages:
       runOnce:
         deploy:
           steps:
-          
+
           - template: resourcesDeployment.yml
             parameters:
               SubscriptionId: ${{ variables.ProdSubscriptionId }}
               Location: West Europe
-              AzureResourceManagerConnection: ${{ variables.ProdAzureResourceManagerConnection }}        
+              AzureResourceManagerConnection: ${{ variables.ProdAzureResourceManagerConnection }}
               Environment: 'prod'
 
           - task: AzureCLI@2

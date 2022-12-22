@@ -4,7 +4,7 @@ parameters:
   - name: Location
     type: string
   - name: AzureResourceManagerConnection
-    type: string 
+    type: string
   - name: Environment
     type: string
 

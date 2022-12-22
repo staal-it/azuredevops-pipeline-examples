@@ -1,8 +1,8 @@
 parameters:
   - name: service_connection
-    type: string 
-  - name: working_directory 
-    type: string 
+    type: string
+  - name: working_directory
+    type: string
     default: 'terraform'
   - name: terraformStateKey
     type: string
