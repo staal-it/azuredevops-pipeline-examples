@@ -1,12 +1,12 @@
 parameters:
   - name: service_connection
     type: string
-  - name: working_directory 
-    type: string 
+  - name: working_directory
+    type: string
     default: 'terraform'
   - name: environment
     type: string
-    
+
 steps:
   - task: TerraformCLI@0
     displayName: Terraform plan
