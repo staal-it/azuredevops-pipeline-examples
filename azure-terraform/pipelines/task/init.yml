@@ -1,8 +1,8 @@
 parameters:
   - name: service_connection
-    type: string 
-  - name: working_directory 
-    type: string 
+    type: string
+  - name: working_directory
+    type: string
     default: 'terraform'
   - name: terraformStateKey
     type: string
@@ -24,8 +24,8 @@ steps:
       command: init
       backendType: azurerm
       backendServiceArm: ${{ parameters.service_connection }}
-      workingDirectory: "$(System.DefaultWorkingDirectory)/${{ parameters.working_directory }}"
-      ensureBackend: false
+      workingDirectory: ${{ parameters.working_directory }}
+      ensureBackend: true
       backendAzureRmResourceGroupName: ${{ parameters.resourceGroup }}
       backendAzureRmResourceGroupLocation: ${{ parameters.location }}
       backendAzureRmStorageAccountName: ${{ parameters.storageAccount }}

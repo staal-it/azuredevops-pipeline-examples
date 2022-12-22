@@ -45,4 +45,3 @@ stages:
               script: |
                 write-host "This is job Foo."
                 write-host $(varFromStageA)
-

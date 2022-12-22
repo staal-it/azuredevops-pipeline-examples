@@ -1,6 +1,6 @@
 #!/bin/bash
-set -xe 
+set -xe
 
 . ./common-tf.sh
 
-terraform apply -auto-approve tfplan.tmp 
+terraform apply -auto-approve tfplan.tmp
