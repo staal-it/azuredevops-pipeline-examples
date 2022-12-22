@@ -24,8 +24,8 @@ steps:
       command: init
       backendType: azurerm
       backendServiceArm: ${{ parameters.service_connection }}
-      workingDirectory: "$(System.DefaultWorkingDirectory)/${{ parameters.working_directory }}"
-      ensureBackend: false
+      workingDirectory: ${{ parameters.working_directory }}
+      ensureBackend: true
       backendAzureRmResourceGroupName: ${{ parameters.resourceGroup }}
       backendAzureRmResourceGroupLocation: ${{ parameters.location }}
       backendAzureRmStorageAccountName: ${{ parameters.storageAccount }}
