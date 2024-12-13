@@ -98,7 +98,7 @@ stages:
                 terraformStateKey: ${{ variables.terraform_statefile_name }}
                 working_directory: ${{ parameters.working_directory }}
 
-            - task: TerraformCLI@0
+            - task: TerraformCLI@2
               displayName: Terraform apply
               inputs:
                 command: apply

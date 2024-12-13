@@ -18,7 +18,7 @@ parameters:
     type: string
 
 steps:
-  - task: TerraformCLI@0
+  - task: TerraformCLI@2
     displayName: Terraform init
     inputs:
       command: init
