@@ -1,0 +1,63 @@
+trigger: none
+
+pr:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - azure-bicep
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  working_directory: ./azure-bicep
+  service_connection: 'Azure MVP Sponsorship'
+  location: 'westeurope'
+
+stages:
+  - stage: validate
+    displayName: 'Validate and What-If'
+    jobs:
+    - job: validate
+      displayName: Validate and What-If
+      steps:
+
+        - task: AzureCLI@2
+          displayName: Build Bicep
+          inputs:
+            azureSubscription: ${{ variables.service_connection }}
+            scriptType: bash
+            scriptLocation: inlineScript
+            inlineScript: az bicep build --file ${{ variables.working_directory }}/main.bicep
+
+        - task: AzureCLI@2
+          displayName: Bicep Lint
+          inputs:
+            azureSubscription: ${{ variables.service_connection }}
+            scriptType: bash
+            scriptLocation: inlineScript
+            inlineScript: az bicep lint --file ${{ variables.working_directory }}/main.bicep
+
+        - task: AzureCLI@2
+          displayName: Validate (dev)
+          inputs:
+            azureSubscription: ${{ variables.service_connection }}
+            scriptType: bash
+            scriptLocation: inlineScript
+            inlineScript: |
+              az deployment sub validate \
+                --location ${{ variables.location }} \
+                --parameters ${{ variables.working_directory }}/config/dev.bicepparam
+
+        - task: AzureCLI@2
+          displayName: What-If (dev)
+          inputs:
+            azureSubscription: ${{ variables.service_connection }}
+            scriptType: bash
+            scriptLocation: inlineScript
+            inlineScript: |
+              az deployment sub what-if \
+                --location ${{ variables.location }} \
+                --parameters ${{ variables.working_directory }}/config/dev.bicepparam
