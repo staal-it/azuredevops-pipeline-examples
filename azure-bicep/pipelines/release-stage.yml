@@ -1,0 +1,77 @@
+parameters:
+- name: environment
+  type: string
+- name: project_name
+  type: string
+- name: service_connection
+  type: string
+- name: working_directory
+  type: string
+- name: location
+  type: string
+  default: 'westeurope'
+
+stages:
+- stage: Validate${{ parameters.environment }}
+  displayName: "Bicep validate - ${{ parameters.environment }}"
+
+  jobs:
+    - job: BicepValidate
+      displayName: Validate and What-If
+      steps:
+        - checkout: none
+        - download: current
+          artifact: sources_directory
+          displayName: Download source directory
+
+        - task: AzureCLI@2
+          displayName: Validate Bicep template
+          inputs:
+            azureSubscription: ${{ parameters.service_connection }}
+            scriptType: bash
+            scriptLocation: inlineScript
+            inlineScript: |
+              az deployment sub validate \
+                --location ${{ parameters.location }} \
+                --parameters ${{ parameters.working_directory }}/config/${{ parameters.environment }}.bicepparam
+
+        - task: AzureCLI@2
+          displayName: What-If
+          inputs:
+            azureSubscription: ${{ parameters.service_connection }}
+            scriptType: bash
+            scriptLocation: inlineScript
+            inlineScript: |
+              az deployment sub what-if \
+                --location ${{ parameters.location }} \
+                --parameters ${{ parameters.working_directory }}/config/${{ parameters.environment }}.bicepparam
+
+- stage: Deploy${{ parameters.environment }}
+  displayName: "Bicep deploy - ${{ parameters.environment }}"
+
+  jobs:
+  - deployment: BicepDeploy
+    displayName: Deploy Bicep
+    environment: bicep-azure-example-${{ parameters.environment }}
+    workspace:
+      clean: all
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - checkout: none
+
+            - download: current
+              artifact: sources_directory
+              displayName: Download source directory
+
+            - task: AzureCLI@2
+              displayName: Deploy Bicep template
+              inputs:
+                azureSubscription: ${{ parameters.service_connection }}
+                scriptType: bash
+                scriptLocation: inlineScript
+                inlineScript: |
+                  az deployment sub create \
+                    --location ${{ parameters.location }} \
+                    --parameters ${{ parameters.working_directory }}/config/${{ parameters.environment }}.bicepparam

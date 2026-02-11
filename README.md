@@ -10,3 +10,8 @@ You can find the code and pipelines [here](https://github.com/staal-it/azuredevo
 This pipeline shows you how to deploy Terraform IaC using Azure DevOps pipelines to Azure. This [blog](https://erwinstaal.nl/posts/azure-terraform-example-pipeline/) describes its details.
 
 You can find the code and pipelines [here](https://github.com/staal-it/azuredevops-pipeline-examples/tree/main/azure-terraform)
+
+## Azure Bicep
+This pipeline shows you how to deploy Bicep IaC using Azure DevOps pipelines to Azure. It uses a subscription-level deployment with a reusable pipeline template for multi-environment (dev/prd) deployments.
+
+You can find the code and pipelines [here](https://github.com/staal-it/azuredevops-pipeline-examples/tree/main/azure-bicep)
